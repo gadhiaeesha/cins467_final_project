@@ -1,5 +1,9 @@
 // ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors, library_private_types_in_public_api
 
+import 'package:app_practice/Models/chore.dart';
+import 'package:app_practice/Models/member.dart';
+import 'package:app_practice/Widgets/chore_container.dart';
+import 'package:app_practice/Widgets/member_container.dart';
 import 'package:flutter/material.dart';
 import 'package:app_practice/FirebaseAuth/dialog_auth.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -23,18 +27,23 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   //define variables of grid list items
-  final List<Map> myProducts = 
+  /* final List<Map> myProducts = 
     List.generate(10, (index) => {"id": index, "name": "Product $index"})
-    .toList();
+    .toList(); */
 
   final double _scrollPosition = 0;
   double _opacity = 0;
+  
   CalendarFormat _calendarFormat = CalendarFormat.week;
   DateTime _focusedDay = DateTime.now();
   DateTime _selectedDay = DateTime.now();
-  
-  bool isSignedIn = false;
 
+  List<Chores> chores = [];
+  int tempIdCount = 0;
+  bool displayEvent = false;
+
+  List<Member> members = [];
+  int tempMemIdCount = 0;
   /// ************************************************************************************************
   /// Displays Calendar in week view for Home Page                                                   *
   /// ************************************************************************************************
@@ -59,16 +68,348 @@ class _HomePageState extends State<HomePage> {
           setState(() {
             _selectedDay = selectedDay;
             _focusedDay = focusedDay; // update _focusedDay as well
-            //displayEvent = true;
+            displayEvent = true;
           });
         },
       ),
     );
   }
 
+  /// ************************************************************************************************
+  /// Displays Master Chores List                                                                    *
+  /// ************************************************************************************************
+  Widget _displayChoreList(){
+    return Container(
+      width: MediaQuery.of(context).size.width / 3,
+      height: MediaQuery.of(context).size.height / 2,
+      margin: const EdgeInsets.all(20),
+      //padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        border: Border.all(width: 3),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        children: <Widget>[
+          Container(
+            alignment: Alignment.center,
+            padding: const EdgeInsets.all(5),
+            decoration: const BoxDecoration(
+              color: Color.fromARGB(255, 193, 221, 161),
+              border: Border(
+                bottom: BorderSide(width: 2),
+              ),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(7.0),
+                topRight: Radius.circular(7.0),
+              ),
+            ),
+            child: const Text(
+              'Master Chores List',
+              style: TextStyle(
+                color: Colors.black, // Text color
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          // Display chores
+          SizedBox(
+            height: MediaQuery.of(context).size.height / 3,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Column(
+                children: chores.map((e) {
+                  return ChoreContainer(
+                    id: e.id,
+                    title: e.title,
+                    onPress: () => tempDeleteChores(e.id),
+                    //desc: e.desc,
+                  );
+                }).toList(),
+              ), 
+            ),
+          ),
+          Expanded(
+          child: Container(),
+          ), // Added Expanded to push the button to the bottom
+          Padding(
+            padding: const EdgeInsets.all(8.0), // Adjust top padding as needed
+            child: ElevatedButton(
+              onPressed: () {
+                // ignore: prefer_const_constructors
+                showNewChoreForm();
+              },
+              style: OutlinedButton.styleFrom(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)), // Set rounded corners
+                side: const BorderSide(color: Color(0xFF001133)), // Set outline color
+              ), 
+              child: const Text(
+                'Add Chore',
+                style: TextStyle(
+                  color: Colors.black
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// ************************************************************************************************
+  /// Displays Members/Residents List                                                                *
+  /// ************************************************************************************************
+  Widget _displayResidentsList(){
+    return Container(
+        width: MediaQuery.of(context).size.width / 2,
+        height: MediaQuery.of(context).size.height / 4,
+        margin: const EdgeInsets.all(20),
+        //padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          border: Border.all(width: 3),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          children: <Widget>[
+            Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.all(5),
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(255, 193, 221, 161),
+                border: Border(
+                  bottom: BorderSide(width: 2),
+                ),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(7.0),
+                  topRight: Radius.circular(7.0),
+                ),
+              ),
+              child: const Text(
+                'Members',
+                style: TextStyle(
+                  color: Colors.black, // Text color
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            // Display chores
+            SizedBox(
+              height: MediaQuery.of(context).size.height / 7,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  children: members.map((e) {
+                    return MemberContainer(
+                      id: e.id,
+                      name: e.name,
+                    );
+                  }).toList(),
+                ), 
+              ),
+            ),
+            Expanded(
+            child: Container(),
+            ), // Added Expanded to push the button to the bottom
+            Padding(
+              padding: const EdgeInsets.all(8.0), // Adjust top padding as needed
+              child: ElevatedButton(
+                onPressed: () {
+                  // ignore: prefer_const_constructors
+                  showNewMemberForm();
+                },
+                style: OutlinedButton.styleFrom(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)), // Set rounded corners
+                  side: const BorderSide(color: Color(0xFF001133)), // Set outline color
+                ), 
+                child: const Text(
+                  'Add Member',
+                  style: TextStyle(
+                    color: Colors.black
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+  }
+
+  /// ************************************************************************************************
+  /// Displays Events/Additional Chore Details only if specific date in calendar has been selected   *
+  /// ************************************************************************************************
+  Widget _displayEvent(){
+    return Visibility(
+      visible: displayEvent,
+      child: Container(
+        width: MediaQuery.of(context).size.width / 2,
+        height: MediaQuery.of(context).size.height / 4,
+        margin: const EdgeInsets.all(20),
+        //padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          border: Border.all(width: 3),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          children: <Widget>[
+            Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.all(5),
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(255, 193, 221, 161),
+                border: Border(
+                  bottom: BorderSide(width: 2),
+                ),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(7.0),
+                  topRight: Radius.circular(7.0),
+                ),
+              ),
+              child: const Text(
+                'Event',
+                style: TextStyle(
+                  color: Colors.black, // Text color
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void showNewChoreForm() {
+    String title = "";
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Add New Chore"),
+          content: SizedBox(
+            height: MediaQuery.of(context).size.height / 3,
+            width: MediaQuery.of(context).size.width / 2,
+            child: Center(
+              child: TextField(
+                decoration: const InputDecoration(
+                  hintText: 'Enter Chore'
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    title = value;
+                  });
+                },
+              ),
+            ),
+          ), 
+          // Display NewChoreForm widget
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                //newChoreUpload();
+                tempAddChores(title);
+                Navigator.of(context).pop(); // Close the dialog
+                //showNewChoreResult(context); // Show pop-up
+              },
+              child: const Text('Add'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void showNewMemberForm() {
+    String name = "";
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Add New Member"),
+          content: SizedBox(
+            height: MediaQuery.of(context).size.height / 3,
+            width: MediaQuery.of(context).size.width / 2,
+            child: Center(
+              child: TextField(
+                decoration: const InputDecoration(
+                  hintText: 'Enter Member Name'
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    name = value;
+                  });
+                },
+              ),
+            ),
+          ), 
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                tempAddMember(name);
+                Navigator.of(context).pop(); // Close the dialog
+                //showNewChoreResult(context); // Show pop-up
+              },
+              child: const Text('Add'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void tempAddChores(String title) {
+    Chores c = Chores(
+      id: tempIdCount,
+      title: title,
+      desc: "",
+      isDone: false,
+      date: _focusedDay.toString(),
+    );
+    chores.add(c);
+    setState(() {
+      tempIdCount++;
+    });
+  }
+
+  void tempDeleteChores(int id) {
+    for(int i = 0; i < chores.length; i++){
+      if (chores[i].id == id){
+        chores.removeAt(i);
+        break;
+      }
+    }
+    setState(() {});
+  }
+
+  void tempAddMember(String name) {
+    Member m = Member(
+      id: tempMemIdCount,//int.parse(uid!) -> get from firebase,
+      name: name,
+    );
+    members.add(m);
+    setState(() {
+      tempMemIdCount++;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    tempAddChores("test1");
   }
     @override
     Widget build(BuildContext context) {
@@ -106,7 +447,7 @@ class _HomePageState extends State<HomePage> {
           drawer: Drawers(),
           body: Center(
             child: userEmail == null
-              ? AuthDialog()/* Container(
+              ? Container(
                     child: Text(
                       'Welcome Everyone!',
                       style: TextStyle(
@@ -115,9 +456,8 @@ class _HomePageState extends State<HomePage> {
                         fontWeight: FontWeight.bold,
                       ),
                     ), 
-                  ) */
-
-              //UI in grid view list
+                  )
+                // AuthDialog()
               : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -134,33 +474,23 @@ class _HomePageState extends State<HomePage> {
                   ),
                   _displayCalendar(),
                   const SizedBox(height: 50),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        _displayChoreList(),
+                        Column(
+                            children: [
+                              _displayEvent(),
+                              _displayResidentsList(),
+                            ],
+                          ),
+
+                      ]
+                    ),
+                  ),
                 ]
               )
-              /* GridView.builder(
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: 200,
-                  childAspectRatio: 3 / 2,
-                  crossAxisSpacing: 20,
-                  mainAxisExtent: 20
-                ),
-                itemCount: myProducts.length,
-                itemBuilder: (BuildContext ctx, index) {
-                  return Container(
-                    padding: EdgeInsets.all(16),
-                    alignment: Alignment.center,
-                    child: Container(
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(15)
-                      ),
-                      child: Text(myProducts[index]["name"]),
-                    ),
-                  );
-                },
-              ), */
           ),
       );
     }
-
 }

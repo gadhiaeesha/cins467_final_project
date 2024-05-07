@@ -1,2 +1,6 @@
+NOTE: right now, Firebase project is only set up for web app
+
+- need to be able to invite members into household
+    -> in top_app_bar, when members is clicked, display the link to the website so the new member can login and join Firebase's list of authenticated users
 - need to figure out how to show login dialog
 - if no households, must ask user to initialize at least one household before displaying anything

@@ -1,14 +1,14 @@
 import 'package:app_practice/Models/chore.dart';
 import 'package:flutter/material.dart';
 
-class Members {
+class Member {
   int id;
   String name;
-  List<Chores> chores;
+  //List<Chores> chores;
 
-  Members({
+  Member({
     required this.id,
     required this.name,
-    required this.chores,
+    //required this.chores,
   });
 }

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class Household {
   int id;
   String name;
-  List<Members> members;
+  List<Member> members;
   //could also add location here
 
   Household({

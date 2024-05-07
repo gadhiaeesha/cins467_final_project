@@ -152,7 +152,7 @@ class _DrawersState extends State<Drawers> {
               InkWell(
                 onTap: () {},
                 child: Text(
-                  'Design',
+                  'Household',
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 16,
@@ -170,7 +170,7 @@ class _DrawersState extends State<Drawers> {
               InkWell(
                 onTap: () {},
                 child: Text(
-                  'Documentation',
+                  'Members',
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 16,
