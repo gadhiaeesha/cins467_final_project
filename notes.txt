@@ -1,0 +1,2 @@
+- need to figure out how to show login dialog
+- if no households, must ask user to initialize at least one household before displaying anything
