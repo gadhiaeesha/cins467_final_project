@@ -44,6 +44,8 @@ class _HomePageState extends State<HomePage> {
 
   List<Member> members = [];
   int tempMemIdCount = 0;
+
+  String? selectedHouse;
   /// ************************************************************************************************
   /// Displays Calendar in week view for Home Page                                                   *
   /// ************************************************************************************************
@@ -85,7 +87,7 @@ class _HomePageState extends State<HomePage> {
       margin: const EdgeInsets.all(20),
       //padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        border: Border.all(width: 3),
+        border: Border.all(width: 2),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
@@ -96,7 +98,7 @@ class _HomePageState extends State<HomePage> {
             decoration: const BoxDecoration(
               color: Color.fromARGB(255, 193, 221, 161),
               border: Border(
-                bottom: BorderSide(width: 2),
+                bottom: BorderSide(width: 1),
               ),
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(7.0),
@@ -157,85 +159,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   /// ************************************************************************************************
-  /// Displays Members/Residents List                                                                *
-  /// ************************************************************************************************
-  Widget _displayResidentsList(){
-    return Container(
-        width: MediaQuery.of(context).size.width / 2,
-        height: MediaQuery.of(context).size.height / 4,
-        margin: const EdgeInsets.all(20),
-        //padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          border: Border.all(width: 3),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Column(
-          children: <Widget>[
-            Container(
-              alignment: Alignment.center,
-              padding: const EdgeInsets.all(5),
-              decoration: const BoxDecoration(
-                color: Color.fromARGB(255, 193, 221, 161),
-                border: Border(
-                  bottom: BorderSide(width: 2),
-                ),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(7.0),
-                  topRight: Radius.circular(7.0),
-                ),
-              ),
-              child: const Text(
-                'Members',
-                style: TextStyle(
-                  color: Colors.black, // Text color
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            // Display chores
-            SizedBox(
-              height: MediaQuery.of(context).size.height / 7,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(
-                  children: members.map((e) {
-                    return MemberContainer(
-                      id: e.id,
-                      name: e.name,
-                    );
-                  }).toList(),
-                ), 
-              ),
-            ),
-            Expanded(
-            child: Container(),
-            ), // Added Expanded to push the button to the bottom
-            Padding(
-              padding: const EdgeInsets.all(8.0), // Adjust top padding as needed
-              child: ElevatedButton(
-                onPressed: () {
-                  // ignore: prefer_const_constructors
-                  showNewMemberForm();
-                },
-                style: OutlinedButton.styleFrom(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)), // Set rounded corners
-                  side: const BorderSide(color: Color(0xFF001133)), // Set outline color
-                ), 
-                child: const Text(
-                  'Add Member',
-                  style: TextStyle(
-                    color: Colors.black
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-  }
-
-  /// ************************************************************************************************
   /// Displays Events/Additional Chore Details only if specific date in calendar has been selected   *
   /// ************************************************************************************************
   Widget _displayEvent(){
@@ -271,6 +194,41 @@ class _HomePageState extends State<HomePage> {
                   color: Colors.black, // Text color
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height / 7,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  children: members.map((e) {
+                    return MemberContainer(
+                      id: e.id,
+                      name: e.name,
+                    );
+                  }).toList(),
+                ), 
+              ),
+            ),
+            Expanded(
+            child: Container(),
+            ), // Added Expanded to push the button to the bottom
+            Padding(
+              padding: const EdgeInsets.all(8.0), // Adjust top padding as needed
+              child: ElevatedButton(
+                onPressed: () {
+                  
+                },
+                style: OutlinedButton.styleFrom(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)), // Set rounded corners
+                  side: const BorderSide(color: Color(0xFF001133)), // Set outline color
+                ), 
+                child: const Text(
+                  'Add Event',
+                  style: TextStyle(
+                    color: Colors.black
+                  ),
                 ),
               ),
             ),
@@ -377,7 +335,7 @@ class _HomePageState extends State<HomePage> {
       title: title,
       desc: "",
       isDone: false,
-      date: _focusedDay.toString(),
+      date: DateTime.now(),
     );
     chores.add(c);
     setState(() {
@@ -406,10 +364,39 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void _checkSelectedHouse() {
+  if (userEmail != null && selectedHouse == null) {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      _showHouseSelectionDialog();
+    });
+  }
+}
+
+  void _showHouseSelectionDialog() {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('House Selection'),
+        content: Text('Please select a household to proceed.'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text('OK'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
   @override
   void initState() {
     super.initState();
     tempAddChores("test1");
+    _checkSelectedHouse();
   }
     @override
     Widget build(BuildContext context) {
@@ -440,7 +427,14 @@ class _HomePageState extends State<HomePage> {
           )
           : PreferredSize(
             preferredSize: Size(screenSize.width, 1000), 
-            child: TopAppBar(_opacity),
+            child: TopAppBar(
+              _opacity, 
+              onHouseSelected: (house) {
+                setState(() {
+                  selectedHouse = house;
+                });
+              },
+            ),
           ),
 
           // Call Drawers Widget
@@ -449,7 +443,7 @@ class _HomePageState extends State<HomePage> {
             child: userEmail == null
               ? Container(
                     child: Text(
-                      'Welcome Everyone!',
+                      'Welcome to ChoreNoMore!',
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 36,
@@ -481,7 +475,7 @@ class _HomePageState extends State<HomePage> {
                         Column(
                             children: [
                               _displayEvent(),
-                              _displayResidentsList(),
+                              //_displayResidentsList(),
                             ],
                           ),
 

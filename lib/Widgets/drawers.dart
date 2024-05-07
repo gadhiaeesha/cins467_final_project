@@ -185,24 +185,6 @@ class _DrawersState extends State<Drawers> {
                   thickness: 2,
                 ),
               ),
-              InkWell(
-                onTap: () {},
-                child: Text(
-                  'Developer',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
-                child: Divider(
-                  color: Colors.blueGrey[400],
-                  thickness: 2,
-                ),
-              ), 
             ]
           ),
         ),

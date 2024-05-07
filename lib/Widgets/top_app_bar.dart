@@ -8,8 +8,9 @@ import '../FirebaseAuth/dialog_auth.dart';
 // UI of TopAppBar
 class TopAppBar extends StatefulWidget {
   final double opacity;
+  final Function(String?) onHouseSelected; // Callback function
 
-  TopAppBar(this.opacity);
+  TopAppBar(this.opacity, {required this.onHouseSelected});
 
   @override
   _TopAppBarState createState() => _TopAppBarState();
@@ -17,6 +18,204 @@ class TopAppBar extends StatefulWidget {
 
 class _TopAppBarState extends State<TopAppBar> {
   bool _isProcessing = false;
+
+  String? selectedHouse; // Selected house
+
+  // Method to update selectedHouse
+  void updateSelectedHouse(String? house) {
+    setState(() {
+      selectedHouse = house;
+    });
+    // Call the callback function and pass selectedHouse
+    widget.onHouseSelected(selectedHouse);
+  }
+
+  void showMemberProfile(String name) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("$name's Profile"),
+          backgroundColor: Color.fromARGB(255, 208, 250, 161),
+          contentPadding: EdgeInsets.only(top: 15),
+          content: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(17), bottomRight: Radius.circular(17)),
+            ),
+            child: SizedBox(
+              height: (MediaQuery.of(context).size.height / 3) + 10,
+              width: MediaQuery.of(context).size.width / 2,
+              child: Column(
+                children: [
+                  SizedBox(height:10),
+                  Row(
+                    //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      SizedBox(
+                        height: (MediaQuery.of(context).size.height / 3),
+                        width: MediaQuery.of(context).size.width / 4,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: Column(
+                            children: [
+                              Text(
+                                "Tasks",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              SizedBox(height:15),
+                              Container(
+                            //padding: EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              border: Border.all(),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: SizedBox(
+                              height: (MediaQuery.of(context).size.height / 4) + 20,
+                              width: MediaQuery.of(context).size.height / 5,
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.vertical,
+                                child: ListView(
+                                shrinkWrap: true,
+                                children: [
+                                  ListTile(
+                                    title: Text("Event 1"),
+                                    subtitle: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text("Description of Task 1"),
+                                        Text("Must Done By: [Date]"),
+                                      ],
+                                    ),
+                                  ),
+                                  ListTile(
+                                    title: Text("Event 2"),
+                                    subtitle: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text("Description of Task 2"),
+                                        Text("Must Done By: [Date]"),
+                                      ],
+                                    ),
+                                  ),
+                                  ListTile(
+                                    title: Text("Event 3"),
+                                    subtitle: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text("Description of Task 3"),
+                                        Text("Must Done By: [Date]"),
+                                      ],
+                                    ),
+                                  ),
+                                  ListTile(
+                                    title: Text("Event 4"),
+                                    subtitle: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text("Description of Task 4"),
+                                        Text("Must Done By: [Date]"),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              ),
+                            ),
+                          ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Column(
+                        children: [
+                          Text(
+                            "Contact Info",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          SizedBox(height:15),
+                          Container(
+                            padding: EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              border: Border.all(),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              "Phone: 123-456-7890\nEmail: example@example.com",
+                              style: TextStyle(fontSize: 14),
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                          Text(
+                            "Events",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          Container(
+                            //padding: EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              border: Border.all(),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: SizedBox(
+                              height: MediaQuery.of(context).size.height / 6,
+                              width: MediaQuery.of(context).size.height / 5,
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.vertical,
+                                child: ListView(
+                                shrinkWrap: true,
+                                children: [
+                                  ListTile(
+                                    title: Text("Event 1"),
+                                    subtitle: Text("Description of Event 1"),
+                                  ),
+                                  ListTile(
+                                    title: Text("Event 2"),
+                                    subtitle: Text("Description of Event 2"),
+                                  ),
+                                  ListTile(
+                                    title: Text("Event 3"),
+                                    subtitle: Text("Description of Event 2"),
+                                  ),
+                                  ListTile(
+                                    title: Text("Event 4"),
+                                    subtitle: Text("Description of Event 2"),
+                                  ),
+                                  ListTile(
+                                    title: Text("Event 5"),
+                                    subtitle: Text("Description of Event 2"),
+                                  ),
+                                  // Add more ListTiles for tasks as needed
+                                ],
+                              ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -42,11 +241,52 @@ class _TopAppBarState extends State<TopAppBar> {
               ),
               Expanded(
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    SizedBox(width: screenSize.width / 8),
-                    InkWell(
-                      onTap: () {},
+                    PopupMenuButton<String>(    
+                      onSelected: (String value) {
+                        // adjust HomePage contents to reflect different households different chores
+                        //print('Selected item: $value');
+                        setState(() {
+                          selectedHouse = value;
+                        });
+                      },
+                      surfaceTintColor: Colors.lightGreen,
+                      itemBuilder: (BuildContext context) {
+                        return <PopupMenuEntry<String>>[
+                          PopupMenuItem<String>(
+                            value: 'College',
+                            child: Row(
+                              children: [
+                                Text('College'),
+                                if (selectedHouse == 'College') // Show check mark if selected
+                                  Icon(Icons.check),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem<String>(
+                            value: 'Home',
+                            child: Row(
+                              children: [
+                                Text('Home'),
+                                if (selectedHouse == 'Home') // Show check mark if selected
+                                  Icon(Icons.check),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem<String>(
+                            value: 'Vacation',
+                            child: Row(
+                              children: [
+                                Text('Vacation'),
+                                if (selectedHouse == 'Vacation') // Show check mark if selected
+                                  Icon(Icons.check),
+                              ],
+                            ),
+                          ),
+                          // Add more PopupMenuItem as needed
+                        ];
+                      },
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -62,9 +302,30 @@ class _TopAppBarState extends State<TopAppBar> {
                         ],
                       ),
                     ),
-                    SizedBox(width: screenSize.width / 20),
-                    InkWell(
-                      onTap: () {},
+                    PopupMenuButton<String>(    
+                      onSelected: (String value) {
+                        // adjust HomePage contents to reflect different households different chores
+                        //print('Selected item: $value');
+                        showMemberProfile(value);
+                      },
+                      surfaceTintColor: Colors.lightGreen,
+                      itemBuilder: (BuildContext context) {
+                        return <PopupMenuEntry<String>>[
+                          PopupMenuItem<String>(
+                            value: 'Member1',
+                            child: Text('Member1'),
+                          ),
+                          PopupMenuItem<String>(
+                            value: 'Member2',
+                            child: Text('Member2'),
+                          ),
+                          PopupMenuItem<String>(
+                            value: 'Member3',
+                            child: Text('Member3'),
+                          ),
+                          // Add more PopupMenuItem as needed
+                        ];
+                      },
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -80,8 +341,8 @@ class _TopAppBarState extends State<TopAppBar> {
                         ],
                       ),
                     ),
-                    SizedBox(width: screenSize.width / 20),
-                    InkWell(
+                    //SizedBox(width: screenSize.width / 20),
+                    /* InkWell(
                       onTap: () {},
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -97,7 +358,7 @@ class _TopAppBarState extends State<TopAppBar> {
                           SizedBox(height: 5),
                         ],
                       ),
-                    ),
+                    ), */
                   ],
                 ),
               ),

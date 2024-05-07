@@ -5,7 +5,7 @@ class Chores {
   String title;
   String desc;
   bool isDone;
-  String date; 
+  DateTime date; 
 
   Chores({
     required this.id,

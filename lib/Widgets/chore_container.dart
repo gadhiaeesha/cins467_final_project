@@ -28,7 +28,7 @@ class _ChoreContainerState extends State<ChoreContainer> {
         height: MediaQuery.of(context).size.height / 16,
         decoration: const BoxDecoration(
           border: Border(
-            bottom: BorderSide(width: 2),
+            bottom: BorderSide(width: 1),
           ),
         ),
         child: Column(
