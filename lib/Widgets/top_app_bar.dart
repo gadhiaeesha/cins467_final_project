@@ -18,6 +18,7 @@ class TopAppBar extends StatefulWidget {
 
 class _TopAppBarState extends State<TopAppBar> {
   bool _isProcessing = false;
+  List<String> householdOptions = ['College Apartment', 'Home', 'Vacation - AirBnB']; // List of household options
 
   String? selectedHouse; // Selected house
 
@@ -28,6 +29,81 @@ class _TopAppBarState extends State<TopAppBar> {
     });
     // Call the callback function and pass selectedHouse
     widget.onHouseSelected(selectedHouse);
+  }
+
+  void _showNewHouseholdDialog() {
+    String newHouseholdName = ''; // Variable to store the new household name
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('New Household'),
+          backgroundColor: Color.fromARGB(255, 208, 250, 161),
+          contentPadding: EdgeInsets.only(top: 15),
+          content: Container(
+            padding: EdgeInsets.only(top: 20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(17), bottomRight: Radius.circular(17)),
+            ),
+            child: SizedBox(
+              height: (MediaQuery.of(context).size.height / 3.5) + 10,
+              width: MediaQuery.of(context).size.width / 2,
+              child: Padding(
+                padding: const EdgeInsets.all(40.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      decoration: InputDecoration(labelText: 'Household Name'),
+                      onChanged: (value) {
+                        // Update the new household name as the user types
+                        newHouseholdName = value;
+                      },
+                    ),
+                    SizedBox(height: 50),
+                    TextField(
+                      decoration: InputDecoration(labelText: 'Members'),
+                      onChanged: (value) {
+                        // Handle changes in Members list 
+                        // Members are initialized with no chores assigned to them
+                      },
+                    ),
+                    SizedBox(height: 50),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text('Cancel', style: TextStyle(color: Colors.black)),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            // Handle creation of new household
+                            // Add the new household to the list of options
+                            if (newHouseholdName.isNotEmpty) {
+                              householdOptions.add(newHouseholdName);
+                            }
+                            Navigator.pop(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color.fromARGB(255, 208, 250, 161), // Same color as the title
+                          ),
+                          child: Text('Create', style: TextStyle(color: Colors.black)),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void showMemberProfile(String name) {
@@ -215,8 +291,6 @@ class _TopAppBarState extends State<TopAppBar> {
     );
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
@@ -231,7 +305,7 @@ class _TopAppBarState extends State<TopAppBar> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                "ChoreNoMore",
+                "NoMoreChores",
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 20,
@@ -243,122 +317,112 @@ class _TopAppBarState extends State<TopAppBar> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    PopupMenuButton<String>(    
-                      onSelected: (String value) {
-                        // adjust HomePage contents to reflect different households different chores
-                        //print('Selected item: $value');
-                        setState(() {
-                          selectedHouse = value;
-                        });
-                      },
-                      surfaceTintColor: Colors.lightGreen,
-                      itemBuilder: (BuildContext context) {
-                        return <PopupMenuEntry<String>>[
-                          PopupMenuItem<String>(
-                            value: 'College',
-                            child: Row(
-                              children: [
-                                Text('College'),
-                                if (selectedHouse == 'College') // Show check mark if selected
-                                  Icon(Icons.check),
-                              ],
+                    if (userEmail != null)
+                      PopupMenuButton<String>(
+                        onSelected: (String value) {
+                          // adjust HomePage contents to reflect different households different chores
+                          if (value == 'New Household') {
+                            // Show dialogue for creating a new household
+                            _showNewHouseholdDialog();
+                          } else {
+                            // Adjust HomePage contents to reflect different households different chores
+                            setState(() {
+                              selectedHouse = value;
+                            });
+                          }
+                        },
+                        surfaceTintColor: Colors.lightGreen,
+                        itemBuilder: (BuildContext context) {
+                          return householdOptions.map((String value) {
+                            return PopupMenuItem<String>(
+                              value: value,
+                              child: Row(
+                                children: [
+                                  Text(value),
+                                  if (selectedHouse == value) // Show check mark if selected
+                                    Icon(Icons.check),
+                                ],
+                              ),
+                            );
+                          }).toList() +
+                          [
+                            PopupMenuItem<String>(
+                              value: 'New Household',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.add), // Add icon
+                                  SizedBox(width: 5), // Add spacing
+                                  Text('New Household'),
+                                ],
+                              ),
                             ),
-                          ),
-                          PopupMenuItem<String>(
-                            value: 'Home',
-                            child: Row(
-                              children: [
-                                Text('Home'),
-                                if (selectedHouse == 'Home') // Show check mark if selected
-                                  Icon(Icons.check),
-                              ],
+                          ];
+                        },
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Household',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          PopupMenuItem<String>(
-                            value: 'Vacation',
-                            child: Row(
-                              children: [
-                                Text('Vacation'),
-                                if (selectedHouse == 'Vacation') // Show check mark if selected
-                                  Icon(Icons.check),
-                              ],
-                            ),
-                          ),
-                          // Add more PopupMenuItem as needed
-                        ];
-                      },
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'Household',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                        ],
+                            SizedBox(height: 5),
+                          ],
+                        ),
                       ),
-                    ),
-                    PopupMenuButton<String>(    
-                      onSelected: (String value) {
-                        // adjust HomePage contents to reflect different households different chores
-                        //print('Selected item: $value');
-                        showMemberProfile(value);
-                      },
-                      surfaceTintColor: Colors.lightGreen,
-                      itemBuilder: (BuildContext context) {
-                        return <PopupMenuEntry<String>>[
-                          PopupMenuItem<String>(
-                            value: 'Member1',
-                            child: Text('Member1'),
-                          ),
-                          PopupMenuItem<String>(
-                            value: 'Member2',
-                            child: Text('Member2'),
-                          ),
-                          PopupMenuItem<String>(
-                            value: 'Member3',
-                            child: Text('Member3'),
-                          ),
-                          // Add more PopupMenuItem as needed
-                        ];
-                      },
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'Members',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                    if (userEmail != null)
+                      PopupMenuButton<String>(
+                        onSelected: (String value) {
+                          // adjust HomePage contents to reflect different households different chores
+                          //print('Selected item: $value');
+                          showMemberProfile(value);
+                        },
+                        surfaceTintColor: Colors.lightGreen,
+                        itemBuilder: (BuildContext context) {
+                          return <PopupMenuEntry<String>>[
+                            PopupMenuItem<String>(
+                              value: 'Member 1',
+                              child: Text('Member 1'),
                             ),
-                          ),
-                          SizedBox(height: 5),
-                        ],
-                      ),
-                    ),
-                    //SizedBox(width: screenSize.width / 20),
-                    /* InkWell(
-                      onTap: () {},
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'Developer',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                            PopupMenuItem<String>(
+                              value: 'Member 2',
+                              child: Text('Member 2'),
                             ),
-                          ),
-                          SizedBox(height: 5),
-                        ],
+                            PopupMenuItem<String>(
+                              value: 'Member 3',
+                              child: Text('Member 3'),
+                            ),
+                            PopupMenuItem<String>(
+                              value: 'Add Member',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.add), // Add icon
+                                  SizedBox(width: 5), // Add spacing
+                                  Text('Add Member'),
+                                ],
+                              ),
+                            ),
+                            // Add more PopupMenuItem as needed
+                          ];
+                        },
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Members',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 5),
+                          ],
+                        ),
                       ),
-                    ), */
                   ],
                 ),
               ),
@@ -366,120 +430,80 @@ class _TopAppBarState extends State<TopAppBar> {
 
               /// To show the Sign In button only when the user is not signed in already
               
-              InkWell(
-                onTap: userEmail == null
-                  ? () {
-                    showDialog(
-                      context: context, 
-                      // for call and show AuthDialog widget when tapped
-                      builder: (context) => AuthDialog(),
-                    );
-                  }
-                  : null,
-
-                // if the user is logged in, the userEmail will be non-null,
-                // irrespective of the authentication method
-                child: userEmail == null
-                  ? Container(
-                    padding: const EdgeInsets.only(
-                      top: 8,
-                      bottom: 8,
-                      left: 12,
-                      right: 0,
+              if (userEmail != null)
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: 15,
+                    backgroundImage: imageUrl != null
+                      ? NetworkImage(imageUrl!)
+                      : null,
+                    child: imageUrl == null
+                      ? Icon(
+                        Icons.account_circle,
+                        size: 30,
+                      )
+                      : Container(),
+                  ),
+                  SizedBox(width: 5),
+                  Text(
+                    name ?? userEmail!,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
                     ),
-                    width: 75,
-                    height: 38,
-                    decoration: ShapeDecoration(
+                  ),
+                  SizedBox(width: 10),
+                    // UI for the Sign out button
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      color: Colors.white,
                     ),
-                    child: Text(
-                      'Sign In',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.blue,
-                        fontWeight: FontWeight.bold
-                      ),
-                    ),
-                  )
-                  
-                  // To display the user profile picture (if present), user email/name and a sign out button
-                  : Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 15,
-                        backgroundImage: imageUrl != null
-                          ? NetworkImage(imageUrl!)
-                          : null,
-                        child: imageUrl == null
-                          ? Icon(
-                            Icons.account_circle,
-                            size: 30,
-                          )
-                          : Container(),
-                      ),
-                      SizedBox(width: 5),
-                      Text(
-                        name ?? userEmail!,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                       // UI for the Sign out button
-                      TextButton(
-                        style: TextButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        onPressed: _isProcessing
-                          ? null
-                          : () async {
-                            setState(() {
-                              _isProcessing = true;
-                            });
-                            await signOut().then((result) {
-                              print(result);
+                    onPressed: _isProcessing
+                      ? null
+                      : () async {
+                        setState(() {
+                          _isProcessing = true;
+                        });
+                        await signOut().then((result) {
+                          print(result);
 
-                              //nav to home
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                  fullscreenDialog: true,
-                                  builder: (context) => HomePage(),
-                                ),
-                              );
-                            }).catchError((error) {
-                              print('Sign Out Error: $error');
-                            });
-                            setState(() {
-                              _isProcessing = false;
-                            });
-                        }, 
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                            top: 8.0,
-                            bottom: 8.0,
-                          ),
-                          child: _isProcessing
-                            ? CircularProgressIndicator()
-                            : Text(
-                              'Sign Out',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.red,
-                              ),
+                          //nav to home
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              fullscreenDialog: true,
+                              builder: (context) => HomePage(),
                             ),
-                        ),
+                          );
+                        }).catchError((error) {
+                          print('Sign Out Error: $error');
+                        });
+                        setState(() {
+                          _isProcessing = false;
+                        });
+                    }, 
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        top: 8.0,
+                        bottom: 8.0,
                       ),
-                    ],
+                      child: _isProcessing
+                        ? CircularProgressIndicator()
+                        : Text(
+                          'Sign Out',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red,
+                          ),
+                        ),
+                    ),
                   ),
+                ],
               ),
             ],
           ),

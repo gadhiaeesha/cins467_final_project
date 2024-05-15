@@ -35,7 +35,6 @@ class _MyAppState extends State<MyApp> {
   Future getUserInfo() async {
     await getUser();
     setState(() {});
-    print(uid);
   }
 
   @override
@@ -47,7 +46,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "ChoreNoMore",
+      title: "NoMoreChores",
       theme: ThemeData(brightness: Brightness.light),
       home: HomePage(),
     );

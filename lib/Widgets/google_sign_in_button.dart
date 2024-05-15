@@ -39,7 +39,7 @@ class _GoogleButtonState extends State<GoogleButton> {
           await signInWithGoogle().then((result) {
             print(result);
             if (result != null){
-              Navigator.of(context).pop();
+              //Navigator.of(context).pop();
               //Navigate to home page after login
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(

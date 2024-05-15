@@ -91,7 +91,7 @@ class _AuthDialogState extends State<AuthDialog> {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      'Login Page',
+                      'Sign In/Sign Up',
                       style: TextStyle(
                         color: Theme
                           .of(context)
@@ -274,7 +274,7 @@ class _AuthDialogState extends State<AuthDialog> {
                                     });
 
                                     Future.delayed(Duration(milliseconds: 500), () {
-                                      Navigator.of(context).pop();
+                                      //Navigator.of(context).pop();
 
                                       // navigating to home page after sign in
                                       Navigator
